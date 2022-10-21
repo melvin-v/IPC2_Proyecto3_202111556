@@ -12,7 +12,6 @@ def crearConfiguracion():
     bdd = json.loads(archivo.read())
     archivo.close()
     
-    
     data = request.get_data()
     lector = LecturaConfXML(data, bdd)
     archivoJSON = lector.cargar()
