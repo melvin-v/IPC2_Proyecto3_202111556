@@ -25,7 +25,7 @@
         <div class="p-3 mb-2 bg-warning text-dark rounded" style="margin-top: 150px;">
             <div class="row">
                 <div class="col-6 offset-3">
-                    <form method="POST">
+                    <form method="POST"  enctype="multipart/form-data">
                         {% csrf_token %}
                         <div class="input-group mb-3">
                             <input type="file" class="form-control" id="inputConf" name="inputConf" accept=".XML">

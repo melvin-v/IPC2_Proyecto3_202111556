@@ -13,6 +13,7 @@ def crearConfiguracion():
     archivo.close()
     
     data = request.get_data()
+    print(data)
     lector = LecturaConfXML(data, bdd)
     archivoJSON = lector.cargar()
     with open("backend\BDD\configuraciones.json", "w") as outfile: 

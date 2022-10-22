@@ -1,7 +1,6 @@
 from django.shortcuts import render
 from django.http import HttpResponse
 from .services import Backend
-from .services import UploadFileForm
 # Create your views here.
 
 def index(request):
@@ -10,7 +9,6 @@ def index(request):
 
 def enviarConf(request):
     if request.method == "POST":
-        #archivo =  request.POST.get("inputConf")
         archivo = request.FILES["inputConf"]
         print(archivo)
         resultado = Backend.enviarConfiguracion(archivo)
