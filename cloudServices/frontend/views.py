@@ -16,3 +16,13 @@ def enviarConf(request):
         return render(request, "frontend/enviarConf.html", resultado)
     
     return render(request, "frontend/enviarConf.html", {})
+
+def enviarCons(request):
+    if request.method == "POST":
+        archivo = request.FILES["inputCons"]
+        print(archivo)
+        resultado = Backend.enviarConsumo(archivo)
+        
+        return render(request, "frontend/enviarCons.html", resultado)
+    
+    return render(request, "frontend/enviarCons.html", {})

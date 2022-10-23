@@ -1,6 +1,5 @@
 import xml.etree.ElementTree as ET
-
-class LecturaConfXML:
+class LecturaConfiguraciones:
     def __init__(self, archivo, bdd) -> None:
         self.archivo = archivo
         self.bdd = bdd
@@ -10,6 +9,7 @@ class LecturaConfXML:
         self.instancias = 0
         
     def cargar(self):
+        #root = ET.parse(self.archivo, parser=ET.XMLParser(encoding='utf-8'))
         root = ET.fromstring(self.archivo)
         configuraciones = self.bdd
         
@@ -128,7 +128,7 @@ class LecturaConfXML:
         return configuraciones
     
     def mensaje(self):
-        lista = {{"recursos":self.recursos}, {"categorias":self.categorias}, {"clientes":self.clientes}, {"instancias":self.instancias}}
+        lista = {"recursos":self.recursos, "categorias":self.categorias, "clientes":self.clientes, "instancias":self.instancias}
         return lista
                                         
         

@@ -4,5 +4,6 @@ from . import views
 
 urlpatterns = [
     path("", views.index, name='index'),
-    path("enviarconf/", views.enviarConf, name='enviar')
+    path("enviarconfiguracion/", views.enviarConf, name='enviar'),
+    path("enviarconsumo/", views.enviarCons, name='enviar')
 ]
