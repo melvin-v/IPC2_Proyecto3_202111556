@@ -26,5 +26,5 @@ class LecturaConsumos:
         return consumos
     
     def mensaje(self):
-        return {"consumos":self.consumos}
+        return {"consumos":self.consumos, "msg":"correcto"}
             

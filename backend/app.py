@@ -47,5 +47,9 @@ def crearConsumo():
         json.dump(archivoJSON, outfile)
     return jsonify(lector.mensaje())
 
+@app.route("/consultarDatos", methods=["POST"])
+def consultarDatos():
+    pass
+
 app.run(debug=True, port=4000)
 

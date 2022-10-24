@@ -128,7 +128,7 @@ class LecturaConfiguraciones:
         return configuraciones
     
     def mensaje(self):
-        lista = {"recursos":self.recursos, "categorias":self.categorias, "clientes":self.clientes, "instancias":self.instancias}
+        lista = {"recursos":self.recursos, "categorias":self.categorias, "clientes":self.clientes, "instancias":self.instancias, "msg":"correcto"}
         return lista
                                         
         

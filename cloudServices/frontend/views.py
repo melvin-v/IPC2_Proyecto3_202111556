@@ -15,7 +15,7 @@ def enviarConf(request):
         
         return render(request, "frontend/enviarConf.html", resultado)
     
-    return render(request, "frontend/enviarConf.html", {})
+    return render(request, "frontend/enviarConf.html", {"msg":"incorrecto"})
 
 def enviarCons(request):
     if request.method == "POST":
@@ -25,4 +25,4 @@ def enviarCons(request):
         
         return render(request, "frontend/enviarCons.html", resultado)
     
-    return render(request, "frontend/enviarCons.html", {})
+    return render(request, "frontend/enviarCons.html", {"msg":"incorrecto"})
