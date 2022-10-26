@@ -10,7 +10,6 @@ def index(request):
 def enviarConf(request):
     if request.method == "POST":
         archivo = request.FILES["inputConf"]
-        print(archivo)
         resultado = Backend.enviarConfiguracion(archivo)
         
         return render(request, "frontend/enviarConf.html", resultado)
@@ -20,9 +19,12 @@ def enviarConf(request):
 def enviarCons(request):
     if request.method == "POST":
         archivo = request.FILES["inputCons"]
-        print(archivo)
         resultado = Backend.enviarConsumo(archivo)
         
         return render(request, "frontend/enviarCons.html", resultado)
     
     return render(request, "frontend/enviarCons.html", {"msg":"incorrecto"})
+
+def getDatos(request):
+    datos = Backend.getDatos()
+    return render(request, "frontend/consultaDatos.html", datos)
