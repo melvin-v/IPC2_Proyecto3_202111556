@@ -116,7 +116,7 @@ class LecturaConfiguraciones:
                                         fechaFinalAtributo = atributoI.text
                                 if estadoAtributo == 'Activo':
                                     fechaFinalAtributo = None
-                                str_patron = r'([0-2][0-9]|3[0-1])(\/|-)(0[1-9]|1[0-2])\2(\d{4})'
+                                str_patron = r'([0-2][0-9]|3[0-1])(/)(0[1-9]|1[0-2])\2(\d{4})'
                                 patron = re.compile(str_patron)
                                 fechaClienteInicio = patron.search(fechaInicioAtributo)
                                 if fechaFinalAtributo is None:
@@ -138,7 +138,7 @@ class LecturaConfiguraciones:
                                         self.errores.append({"ErrorConf":mensajeConfig})
                                 else:
                                     fechaClienteFinal = re.match(patron, fechaFinalAtributo)
-                                    if  (fechaClienteInicio != None) and (fechaClienteFinal != None): 
+                                    if  (fechaClienteInicio is not None) and (fechaClienteFinal is not None): 
                                         if  estadoAtributo == 'Cancelada':
                                             listaInstancias.append({"id":instanciaId,
                                                                     "idConfiguracion": idConfiguiracion,
