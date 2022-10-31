@@ -45,6 +45,15 @@
                         </div>
                     </div>
                 </div>
+                {% for error in errores %}
+                    <div class="row" style="margin-top: 30px;">
+                        <div class="col-6 offset-3">
+                            <div class="alert alert-danger" role="alert" id="divAlert">
+                                {{error.HoraFecha}}
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
                 <div class="row">
                     <div class="col-4 offset-4">    
                         <div class="shadow p-3 mb-5 bg-body rounded" id="divText">

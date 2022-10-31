@@ -1,4 +1,5 @@
 import xml.etree.ElementTree as ET
+import re
 class LecturaConfiguraciones:
     def __init__(self, archivo, bdd) -> None:
         self.archivo = archivo
@@ -7,9 +8,9 @@ class LecturaConfiguraciones:
         self.categorias = 0
         self.clientes = 0
         self.instancias = 0
+        self.errores = []
         
     def cargar(self):
-        #root = ET.parse(self.archivo, parser=ET.XMLParser(encoding='utf-8'))
         root = ET.fromstring(self.archivo)
         configuraciones = self.bdd
         
@@ -27,14 +28,22 @@ class LecturaConfiguraciones:
                         elif caracteristica.tag == 'tipo':
                             tipoRecurso = caracteristica.text
                         elif caracteristica.tag == 'valorXhora':
-                            valorXhoraRecurso = caracteristica.text      
-                    configuraciones['lista_recursos'].append({"id": recurso.attrib['id'],
-                                                              "nombre": nombreRecurso,
-                                                              "abreviatura": abreviaturaRecurso,
-                                                              "metrica": metricaRecurso,
-                                                              "tipo": tipoRecurso,
-                                                              "valorXhora": valorXhoraRecurso})
-                    self.recursos += 1
+                            valorXhoraRecurso = caracteristica.text
+                    patronSoft = re.compile(r'Software')
+                    patronHard = re.compile(r'Hardware')
+                    listaSoft = patronSoft.search(tipoRecurso)
+                    listaHard = patronHard.search(tipoRecurso)
+                    if (listaSoft is not None) or (listaHard is not None):       
+                        configuraciones['lista_recursos'].append({"id": recurso.attrib['id'],
+                                                                "nombre": nombreRecurso,
+                                                                "abreviatura": abreviaturaRecurso,
+                                                                "metrica": metricaRecurso,
+                                                                "tipo": tipoRecurso,
+                                                                "valorXhora": valorXhoraRecurso})
+                        self.recursos += 1
+                    else:
+                        mensajeTipo = "Tipo de recurso invalido: " + tipoRecurso
+                        self.errores.append({"ErrorConf":mensajeTipo})
                     
             elif atributo.tag == 'listaCategorias':
                 #Categoria
@@ -105,14 +114,50 @@ class LecturaConfiguraciones:
                                         estadoAtributo = atributoI.text
                                     elif atributoI.tag == 'fechaFinal':
                                         fechaFinalAtributo = atributoI.text
+                                if estadoAtributo == 'Activo':
+                                    fechaFinalAtributo = None
+                                str_patron = r'([0-2][0-9]|3[0-1])(\/|-)(0[1-9]|1[0-2])\2(\d{4})'
+                                patron = re.compile(str_patron)
+                                fechaClienteInicio = patron.search(fechaInicioAtributo)
+                                if fechaFinalAtributo is None:
+                                    fechaClienteFinal = '----'
+                                    if  fechaClienteInicio is not None:
+                                        if    estadoAtributo == 'Activo':
+                                            listaInstancias.append({"id":instanciaId,
+                                                                    "idConfiguracion": idConfiguiracion,
+                                                                    "nombre": nombreAtributo,
+                                                                    "fecha_inicio": fechaClienteInicio.group(0),
+                                                                    "estado": estadoAtributo,
+                                                                    "fecha_final": fechaClienteFinal})
+                                            self.instancias += 1
+                                        else:
+                                            mensajeConfig = "Instancia "  + nombreAtributo + " no agregada debido al estado Activo"
+                                            self.errores.append({"ErrorConf":mensajeConfig})
+                                    else:
+                                        mensajeConfig = "Fecha incorrecta " + fechaInicioAtributo
+                                        self.errores.append({"ErrorConf":mensajeConfig})
+                                else:
+                                    fechaClienteFinal = re.match(patron, fechaFinalAtributo)
+                                    if  (fechaClienteInicio != None) and (fechaClienteFinal != None): 
+                                        if  estadoAtributo == 'Cancelada':
+                                            listaInstancias.append({"id":instanciaId,
+                                                                    "idConfiguracion": idConfiguiracion,
+                                                                    "nombre": nombreAtributo,
+                                                                    "fecha_inicio": fechaClienteInicio.group(0),
+                                                                    "estado": estadoAtributo,
+                                                                    "fecha_final": fechaClienteFinal.group(0)})
+                                            self.instancias += 1
+                                        else:
+                                            mensajeConfig = "Instancia " + nombreAtributo + " no agregada debido al estado Cancelada"
+                                            self.errores.append({"ErrorConf":mensajeConfig})
+                                    else:
+                                        if fechaClienteInicio is None:
+                                            mensajeConfig = "Fecha incorrecta " + fechaInicioAtributo
+                                        else:
+                                            mensajeConfig = "Fecha incorrecta " + fechaFinalAtributo
+                                        self.errores.append({"ErrorConf":mensajeConfig})
+                                    
                                 
-                                listaInstancias.append({"id":instanciaId,
-                                                        "idConfiguiracion": idConfiguiracion,
-                                                        "nombre": nombreAtributo,
-                                                        "fecha_inicio": fechaInicioAtributo,
-                                                        "estado": estadoAtributo,
-                                                        "fecha_final": fechaFinalAtributo})
-                                self.instancias += 1
                                         
                                 
                                 
@@ -128,7 +173,7 @@ class LecturaConfiguraciones:
         return configuraciones
     
     def mensaje(self):
-        lista = {"recursos":self.recursos, "categorias":self.categorias, "clientes":self.clientes, "instancias":self.instancias, "msg":"correcto"}
+        lista = {"recursos":self.recursos, "categorias":self.categorias, "clientes":self.clientes, "instancias":self.instancias, "msg":"correcto", "errores":self.errores}
         return lista
                                         
         
