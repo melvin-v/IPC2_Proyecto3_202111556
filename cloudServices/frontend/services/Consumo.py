@@ -18,5 +18,13 @@ class Backend:
     def enviarRecursoMan(data):
         response = requests.post('http://127.0.0.1:4000/crearRecursoMan', json=data)
         return json.loads(response.text)
+    
+    def enviarCategoriaMan(data):
+        response = requests.post('http://127.0.0.1:4000/crearCategoriaMan', json=data)
+        return json.loads(response.text)
+    
+    def enviarConfiguracionMan(data):
+        response = requests.post('http://127.0.0.1:4000/crearConfiguracionesMan', json=data)
+        return json.loads(response.text)
         
     

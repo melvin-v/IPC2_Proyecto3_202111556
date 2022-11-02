@@ -50,3 +50,36 @@ def creacionRecursos(request):
         return render(request, "frontend/crearRecursos.html", result)
         
     return render(request, "frontend/crearRecursos.html", {})
+
+def creacionCategoria(request):
+    if request.method == "POST":
+        id = request.POST.get("id")
+        nombre = request.POST.get("nombre")
+        descripcion = request.POST.get("descripcion")
+        carga = request.POST.get("cargaCategoria")
+        
+        result = Backend.enviarCategoriaMan({"id": id,
+                    "nombreCategoria": nombre,
+                    "descripcionCategoria": descripcion,
+                    "carga_trabajo": carga
+                    })
+        
+        return render(request, "frontend/crearCategoria.html", result)
+    
+    return render(request, "frontend/crearCategoria.html", {})
+
+def creacionConfiguraciones(request):
+    if request.method == "POST":
+        idCategoria = request.POST.get("idCategoria")
+        idConfiguracion = request.POST.get("idConfiguracion")
+        nombre = request.POST.get("nombre")
+        descripcion = request.POST.get("descripcion")
+        
+        result = Backend.enviarConfiguracionMan({"idCategoria": idCategoria,
+                    "idConfiguracion": idConfiguracion,
+                    "nombre": nombre,
+                    "descripcion": descripcion
+                    })
+        
+        return render(request, "frontend/crearConfiguraciones.html", result)
+    return render(request, "frontend/crearConfiguraciones.html", {})

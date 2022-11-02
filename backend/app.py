@@ -114,6 +114,80 @@ def crearRecursoMan():
     else:
         return jsonify({"msg":"incorrecto", "errores":errores})
     
+@app.route("/crearCategoriaMan", methods=["POST"])
+def crearCategoriaMan():
+    archivo = open("backend\BDD\configuraciones.json")
+    bdd = json.loads(archivo.read())
+    archivo.close()
+    listaID = []
+    for recurso in bdd["lista_categorias"]:
+        listaID.append(recurso["id"])
+      
+    errores = []
+    body = request.get_json()
+    
+    configuracion = {"id": body["id"],
+                    "nombre": body["nombreCategoria"],
+                    "descripcion": body["descripcionCategoria"],
+                    "carga_trabajo": body["carga_trabajo"],
+                    "lista_configuraciones": []} 
+    
+    if body["id"] in listaID:
+        errores.append("ID ya usado")
+        
+    if len(errores) == 0:
+        bdd["lista_categorias"].append(configuracion)
+        with open("backend\BDD\configuraciones.json", "w") as outfile: 
+            json.dump(bdd, outfile)
+            
+        return jsonify({"msg":"correcto"})
+    
+    else:
+        return jsonify({"msg":"incorrecto", "errores":errores})
+    
+@app.route("/crearConfiguracionesMan", methods=["POST"])
+def crearConfiguracionesMan():
+    archivo = open("backend\BDD\configuraciones.json")
+    bdd = json.loads(archivo.read())
+    archivo.close()
+    listaIDCategoria = []
+    listaIDConfiguracion = []
+    counter = 0
+    counterConfiguracion = 0
+            
+    errores = []
+    body = request.get_json()
+    
+    for categoria in bdd["lista_categorias"]:
+        listaIDCategoria.append(categoria["id"])
+        for configuracion in categoria["lista_configuraciones"]:
+            if categoria["id"]==body["idCategoria"]:
+                listaIDConfiguracion.append(configuracion["id"])
+        if categoria["id"]==body["idCategoria"]:
+            counterConfiguracion = counter
+        counter += 1
+    if body["idCategoria"] in listaIDCategoria:
+        pass
+    else:
+        errores.append("ID categoria no existe")
+    if body["idConfiguracion"] in listaIDConfiguracion:
+        errores.append("ID configuracion ya usado")
+        
+    idConfiguracion = body["idConfiguracion"]
+    nombre = body["nombre"]
+    descripcion = body["descripcion"]
+    
+    if len(errores) == 0:
+        bdd["lista_categorias"][counterConfiguracion]['lista_configuraciones'].append({"id":idConfiguracion,
+                                                     "nombre": nombre,
+                                                     "descripcion":descripcion})
+        with open("backend\BDD\configuraciones.json", "w") as outfile: 
+            json.dump(bdd, outfile)
+            
+        return jsonify({"msg":"correcto"})
+    
+    else:
+        return jsonify({"msg":"incorrecto", "errores":errores})
 
 app.run(debug=True, port=4000)
 

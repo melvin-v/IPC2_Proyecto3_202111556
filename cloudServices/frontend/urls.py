@@ -8,6 +8,8 @@ urlpatterns = [
     path("enviarconsumo/", views.enviarCons, name='enviarConsumo'),
     path("consultadatos/", views.getDatos, name='enviarConsumo'),
     path("creaciondatos/", views.creacionDatos, name='creacionDatos'),
-    path("creacionrecursos/", views.creacionRecursos, name='creacionRecursos')
+    path("creacionrecursos/", views.creacionRecursos, name='creacionRecursos'),
+    path("creacioncategoria/", views.creacionCategoria, name='creacionCategoria'),
+    path("creacionconfiguraciones/", views.creacionConfiguraciones, name='creacionConf')
     
 ]
