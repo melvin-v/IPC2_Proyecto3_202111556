@@ -28,3 +28,25 @@ def enviarCons(request):
 def getDatos(request):
     datos = Backend.getDatos()
     return render(request, "frontend/consultaDatos.html", datos)
+
+def creacionDatos(request):
+    return render(request, "frontend/creacionDatos.html", {})
+
+def creacionRecursos(request):
+    if request.method == "POST":
+        idRecurso = request.POST.get("idRecurso")
+        nombre = request.POST.get("nombre")
+        abreviatura = request.POST.get("abreviatura")
+        metrica = request.POST.get("metrica")
+        tipo = request.POST.get("tipo")
+        valorxhora = request.POST.get("valorxhora")
+        result = Backend.enviarRecursoMan({"id": idRecurso,
+                                        "nombre": nombre,
+                                        "abreviatura": abreviatura,
+                                        "metrica": metrica,
+                                        "tipo": tipo,
+                                        "valorXhora": valorxhora})
+        
+        return render(request, "frontend/crearRecursos.html", result)
+        
+    return render(request, "frontend/crearRecursos.html", {})

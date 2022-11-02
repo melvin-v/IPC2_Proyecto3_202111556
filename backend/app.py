@@ -72,7 +72,48 @@ def consultarDatos():
         archivoRetorno = {"configuraciones":bddJsonConf,
                           "consumos":bddJsonCons}
         return jsonify(archivoRetorno)
+    
+@app.route("/crearRecursoMan", methods=["POST"])
+def crearRecursoMan():
+    archivo = open("backend\BDD\configuraciones.json")
+    bdd = json.loads(archivo.read())
+    archivo.close()
+    listaID = []
+    for recurso in bdd["lista_recursos"]:
+        listaID.append(recurso["id"])
         
+    errores = []
+    body = request.get_json()
+    idRecurso = body["id"]
+    nombre = body["nombre"]
+    abreviatura = body["abreviatura"]
+    metrica = body["metrica"]
+    tipo = body["tipo"]
+    valorxhora = body["valorXhora"]
+    
+    if idRecurso in listaID:
+        errores.append("ID ya usado")
+    if tipo in ["Hardware", "Software"]:
+        pass
+    else:
+        errores.append("El tipo es erroneo")
+    
+    if len(errores) == 0:
+        bdd['lista_recursos'].append({"id": idRecurso,
+                                        "nombre": nombre,
+                                        "abreviatura": abreviatura,
+                                        "metrica": metrica,
+                                        "tipo": tipo,
+                                        "valorXhora": valorxhora})
+        
+        with open("backend\BDD\configuraciones.json", "w") as outfile: 
+            json.dump(bdd, outfile)
+            
+        return jsonify({"msg":"correcto"})
+    
+    else:
+        return jsonify({"msg":"incorrecto", "errores":errores})
+    
 
 app.run(debug=True, port=4000)
 
