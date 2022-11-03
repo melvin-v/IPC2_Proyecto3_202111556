@@ -83,3 +83,64 @@ def creacionConfiguraciones(request):
         
         return render(request, "frontend/crearConfiguraciones.html", result)
     return render(request, "frontend/crearConfiguraciones.html", {})
+
+def creacionRescursoSub(request):
+    if request.method == "POST":
+        idCategoria = request.POST.get("idCategoria")
+        idConfiguracion = request.POST.get("idConfiguracion")
+        idRecurso = request.POST.get("idRecurso")
+        cantidad = request.POST.get("cantidad")
+        
+        result = Backend.enviarRecursoSubMan({"idCategoria": idCategoria,
+                    "idConfiguracion": idConfiguracion,
+                    "idRecurso": idRecurso,
+                    "cantidad": cantidad
+                    })
+        
+        return render(request, "frontend/crearRecursoSub.html", result)
+    
+    return render(request, "frontend/crearRecursoSub.html", {})
+
+def creacionCliente(request):
+    if request.method == "POST":
+        nit = request.POST.get("nit")
+        nombre = request.POST.get("nombre")
+        usuario = request.POST.get("usuario")
+        clave = request.POST.get("clave")
+        direccion = request.POST.get("direccion")
+        correo = request.POST.get("correo_electronico")
+        
+        result = Backend.enviarClienteMan({"nit": nit,
+                    "nombre": nombre,
+                    "usuario": usuario,
+                    "clave":clave,
+                    "direccion":direccion,
+                    "correo_electronico":correo
+                    })
+        
+        return render(request, "frontend/crearCliente.html", result)
+    
+    return render(request, "frontend/crearCliente.html", {})
+
+def creacionInstancia(request):
+    if request.method == "POST":
+        nit = request.POST.get("nit")
+        id = request.POST.get("id")
+        idConfiguracion = request.POST.get("idConfiguracion")
+        nombre = request.POST.get("nombre")
+        fecha_inicio = request.POST.get("fecha_inicio")
+        estado = request.POST.get("estado")
+        fecha_final = request.POST.get("fecha_final")
+        
+        result = Backend.enviarInstanciaMan({"nit": nit,
+                    "id": id,
+                    "idConfiguracion":idConfiguracion,
+                    "nombre": nombre,
+                    "fecha_inicio":fecha_inicio,
+                    "estado":estado,
+                    "fecha_final":fecha_final
+                    })
+        
+        return render(request, "frontend/crearInstancia.html", result)
+    
+    return render(request, "frontend/crearInstancia.html", {})

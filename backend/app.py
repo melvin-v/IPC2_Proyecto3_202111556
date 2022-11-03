@@ -2,7 +2,7 @@ from flask import Flask, request, jsonify
 from flask_cors import CORS
 from LecturaConfiguraciones import LecturaConfiguraciones
 from LecturaConsumos import LecturaConsumos
-import json
+import json, re
 
 app = Flask(__name__)
 CORS(app)
@@ -188,6 +188,159 @@ def crearConfiguracionesMan():
     
     else:
         return jsonify({"msg":"incorrecto", "errores":errores})
+    
+@app.route("/crearRecursosSubMan", methods=["POST"])
+def crearRecursosMan():
+    archivo = open("backend\BDD\configuraciones.json")
+    bdd = json.loads(archivo.read())
+    archivo.close()
+    listaIDCategoria = []
+    listaIDConfiguracion = []
+    listaIDRecurso = []
+    counter1 = 0
+    counter2 = 0
+    counterConfiguracion = 0
+    counterCategoria = 0
+    errores = []
+    body = request.get_json()
+    
+    for categoria in bdd["lista_categorias"]:
+        listaIDCategoria.append(categoria["id"])
+        for configuracion in categoria["lista_configuraciones"]:
+            if categoria["id"]==body["idCategoria"]:
+                listaIDConfiguracion.append(configuracion["id"])
+        if categoria["id"]==body["idCategoria"]:
+            counterCategoria = counter1
+            try:
+                for recurso in configuracion["lista_recursos"]:
+                    if recurso["id"]==body["idRecurso"]:
+                        listaIDConfiguracion.append(configuracion["id"])
+                        
+                if recurso["id"]==body["idRecurso"]:
+                    counterConfiguracion = counter2
+            except:
+                pass
+            
+            counter2 += 1        
+        counter1 += 1
+    if body["idCategoria"] in listaIDCategoria:
+        pass
+    else:
+        errores.append("ID categoria no existe")
+    if body["idConfiguracion"] in listaIDConfiguracion:
+        pass
+    else:
+        errores.append("ID configuracion no existe")
+    if body["idRecurso"] in listaIDRecurso:
+        errores.append("ID recurso ya usado")
+            
+    idRecurso = body["idRecurso"]
+    cantidad = body["cantidad"]
+        
+    if len(errores) == 0:
+        bdd["lista_categorias"][counterCategoria]['lista_configuraciones'][counterConfiguracion]['lista_recursos'].append({"id":idRecurso,
+                                                        "cantidad":cantidad})
+        with open("backend\BDD\configuraciones.json", "w") as outfile: 
+            json.dump(bdd, outfile)
+            
+        return jsonify({"msg":"correcto"})
+    
+    else:
+        return jsonify({"msg":"incorrecto", "errores":errores})
 
+@app.route("/crearClienteMan", methods=["POST"])
+def crearClienteMan():
+    archivo = open("backend\BDD\configuraciones.json")
+    bdd = json.loads(archivo.read())
+    archivo.close()
+    listaNit = []
+    for recurso in bdd["lista_clientes"]:
+        listaNit.append(recurso["nit"])
+      
+    errores = []
+    body = request.get_json()
+    
+    cliente = {"nit": body["nit"],
+                    "nombre": body["nombre"],
+                    "usuario": body["usuario"],
+                    "clave": body["clave"],
+                    "direccion": body["direccion"],
+                    "correo_electronico": body["correo_electronico"],
+                    "lista_instancias":[]} 
+    
+    if body["nit"] in listaNit:
+        errores.append("Nit ya usado")
+        
+    if len(errores) == 0:
+        bdd["lista_clientes"].append(cliente)
+        with open("backend\BDD\configuraciones.json", "w") as outfile: 
+            json.dump(bdd, outfile)
+            
+        return jsonify({"msg":"correcto"})
+    
+    else:
+        return jsonify({"msg":"incorrecto", "errores":errores})
+    
+@app.route("/crearInstanciaMan", methods=["POST"])
+def crearInstanciaMan():
+    archivo = open("backend\BDD\configuraciones.json")
+    bdd = json.loads(archivo.read())
+    archivo.close()
+    listaNit = []
+    listaID = []
+    counter = 0
+    counterCliente = 0
+            
+    errores = []
+    body = request.get_json()
+    
+    for cliente in bdd["lista_clientes"]:
+        listaNit.append(cliente["nit"])
+        for instancia in cliente["lista_instancias"]:
+            if cliente["nit"]==body["id"]:
+                listaID.append(instancia["id"])
+        if cliente["nit"]==body["nit"]:
+            counterCliente = counter
+        counter += 1
+    if body["nit"] in listaNit:
+        pass
+    else:
+        errores.append("Nit no existe")
+    if body["idConfiguracion"] in listaNit:
+        errores.append("ID instancia ya usado")
+        
+    str_patron = r'([0-2][0-9]|3[0-1])(/)(0[1-9]|1[0-2])\2(\d{4})'
+    patron = re.compile(str_patron)
+    fechaInicio = patron.search(body["fecha_inicio"])
+    fechaFinal = patron.search(body["fecha_final"])
+    
+    if fechaInicio is None:
+        errores.append("Formato de fecha inicial incorrecto")
+        
+    if fechaFinal is None:
+        errores.append("Formato de fecha final incorrecto")
+        
+    id = body["nit"]
+    idConfiguracion = body["idConfiguracion"]
+    nombre = body["nombre"]
+    fecha_inicio = body["fecha_inicio"]
+    estado = body["estado"]
+    fecha_final = body["fecha_final"]
+    
+    if len(errores) == 0:
+        bdd["lista_clientes"][counterCliente]["lista_instancias"].append({"id":id,
+                                                                          "idConfiguracion":idConfiguracion,
+                                                                          "nombre":nombre,
+                                                                          "fecha_inicio":fecha_inicio,
+                                                                          "estado":estado,
+                                                                          "fecha_final":fecha_final})
+        with open("backend\BDD\configuraciones.json", "w") as outfile: 
+            json.dump(bdd, outfile)
+            
+        return jsonify({"msg":"correcto"})
+    
+    else:
+        return jsonify({"msg":"incorrecto", "errores":errores})
+    
 app.run(debug=True, port=4000)
 

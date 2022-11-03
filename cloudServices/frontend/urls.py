@@ -10,6 +10,9 @@ urlpatterns = [
     path("creaciondatos/", views.creacionDatos, name='creacionDatos'),
     path("creacionrecursos/", views.creacionRecursos, name='creacionRecursos'),
     path("creacioncategoria/", views.creacionCategoria, name='creacionCategoria'),
-    path("creacionconfiguraciones/", views.creacionConfiguraciones, name='creacionConf')
+    path("creacionconfiguraciones/", views.creacionConfiguraciones, name='creacionConf'),
+    path("creacionrecursosub/", views.creacionRescursoSub, name='creacionRec'),
+    path("creacioncliente/", views.creacionCliente, name='creacionCliente'),
+    path("creacioninstancia/", views.creacionInstancia, name='creacionInstancia')
     
 ]
