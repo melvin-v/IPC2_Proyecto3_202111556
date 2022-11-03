@@ -2,7 +2,7 @@ from flask import Flask, request, jsonify
 from flask_cors import CORS
 from LecturaConfiguraciones import LecturaConfiguraciones
 from LecturaConsumos import LecturaConsumos
-import json, re
+import json, re, datetime, random, jinja2, pdfkit
 
 app = Flask(__name__)
 CORS(app)
@@ -341,6 +341,75 @@ def crearInstanciaMan():
     
     else:
         return jsonify({"msg":"incorrecto", "errores":errores})
+   
+@app.route("/facturacion", methods=["POST"])
+def facturacion():
+    archivo = open("backend\BDD\consumos.json")
+    bdd = json.loads(archivo.read())
+    archivo.close()
     
+    archivoFactura = open("backend\BDD\dfacturas.json")
+    facturas = json.loads(archivoFactura.read())
+    archivoFactura.close()
+    contadorVueltas = 0
+    countfacturas = 0
+    body = request.get_json()
+    fI = body["startDate"].split("/")
+    fechaInicial = datetime.date(int(fI[2]), int(fI[1]), int(fI[0]), )
+    fE = body["endDate"].split("/")
+    fechaFinal = datetime.date(int(fE[2]), int(fE[1]), int(fE[0]))
+    for consumo in bdd["lista_consumos"]:
+        str_patron = r'([0-2][0-9]|3[0-1])(/)(0[1-9]|1[0-2])\2(\d{4})'
+        patron = re.compile(str_patron)
+        primero = consumo["fecha_hora"]
+        segundo = patron.search(primero)
+        tercero = segundo.group(0)
+        fEvaluar = tercero.split("/")
+        fechaEvaluar = datetime.date(int(fEvaluar[2]), int(fEvaluar[1]), int(fEvaluar[0]))
+        if (fechaInicial >= fechaEvaluar <= fechaFinal) and consumo["facturado"] == "0":
+            numero = random.randint(1,10000)
+            facturas["facturas"].append({"NumeroFactura":numero,
+                                     "nitCliente": consumo["nitCliente"],
+                                     "idInstancia": consumo["idInstancia"],
+                                     "tiempo": consumo["tiempo"],
+                                     "fecha": body["endDate"]})
+            countfacturas += 1
+            bdd["lista_consumos"][contadorVueltas]["facturado"] = "1"
+        contadorVueltas += 1
+    mensaje = "Se añadieron " + str(countfacturas)     
+    with open("backend\BDD\consumos.json", "w") as outfile: 
+            json.dump(bdd, outfile)
+    with open("backend\BDD\dfacturas.json", "w") as outfile: 
+            json.dump(facturas, outfile)
+            
+            
+    return jsonify({"msg":mensaje}) 
+
+@app.route("/consultarFacturas", methods=["GET"])
+def consultarFacturas():
+        archivo = open("backend\BDD\dFacturas.json")
+        bddJsonfac = json.loads(archivo.read())
+        archivo.close()
+        archivoRetorno = {"facturas":bddJsonfac}
+        return jsonify(archivoRetorno)  
+    
+@app.route("/facturacionpdf", methods=["POST"])
+def facturacionpdf():
+    archivo = open("backend\BDD\dFacturas.json")
+    bddJsonfac = json.loads(archivo.read())
+    archivo.close()
+    body = request.get_json()
+    facturaF = {}
+    for factura in bddJsonfac["facturas"]:
+        if str(factura["NumeroFactura"])==str(body["idFactura"]):
+            facturaF = factura
+    env = jinja2.Environment(loader=jinja2.FileSystemLoader("backend\\"))
+    template = env.get_template("lateFactura.html")
+    html = template.render(facturaF)
+    config = pdfkit.configuration(wkhtmltopdf='C:\\Program Files\\wkhtmltopdf\\bin\\wkhtmltopdf.exe')
+    pdfkit.from_string(html, "C:\\Users\\melvi\\Desktop\\Factura.pdf" , configuration=config)
+    
+    return jsonify({"ruta":"C:\\Users\\melvi\\Desktop\\Factura.pdf"})
+            
 app.run(debug=True, port=4000)
 

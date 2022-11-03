@@ -39,3 +39,13 @@ class Backend:
         response = requests.post('http://127.0.0.1:4000/crearInstanciaMan', json=data)
         return json.loads(response.text)
     
+    def facturas(data):
+        response = requests.post('http://127.0.0.1:4000/facturacion', json=data)
+        return json.loads(response.text)
+    
+    def getFacturas():
+        return json.loads(requests.get('http://127.0.0.1:4000/consultarFacturas').text)
+    
+    def facturaspdf(data):
+        response = requests.post('http://127.0.0.1:4000/facturacionpdf', json=data)
+        return json.loads(response.text)

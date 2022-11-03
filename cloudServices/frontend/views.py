@@ -144,3 +144,25 @@ def creacionInstancia(request):
         return render(request, "frontend/crearInstancia.html", result)
     
     return render(request, "frontend/crearInstancia.html", {})
+
+def facturar(request):
+    if request.method == "POST":
+        fechaIncial = request.POST.get("startDate")
+        fechaFinal = request.POST.get("endDate")
+        result = Backend.facturas({"startDate":fechaIncial,
+                                   "endDate":fechaFinal})
+        return render(request, "frontend/facturacion.html", result)
+        
+    return render(request, "frontend/facturacion.html", {})
+
+def reportes(request):
+    return render(request, "frontend/reportes.html", {})
+
+def facturarpdf(request):
+    datos = Backend.getFacturas()
+    if request.method == "POST":
+        idFactura = request.POST.get("idFactura")
+        result = Backend.facturaspdf({"idFactura":idFactura})
+        return render(request, "frontend/facturapdf.html", result)
+    
+    return render(request, "frontend/facturapdf.html", datos)
